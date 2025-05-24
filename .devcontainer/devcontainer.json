@@ -1,0 +1,65 @@
+{
+    "name": "PyTorch Frame Development",
+    "image": "mcr.microsoft.com/devcontainers/python:3.12-bullseye",
+    
+    "features": {
+        "ghcr.io/devcontainers/features/common-utils:2": {
+            "installZsh": true,
+            "installOhMyZsh": true,
+            "upgradePackages": true
+        },
+        "ghcr.io/devcontainers/features/git:1": {
+            "ppa": true,
+            "version": "latest"
+        }
+    },
+
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.pylint",
+                "ms-python.flake8",
+                "ms-python.black-formatter",
+                "ms-toolsai.jupyter",
+                "ms-toolsai.jupyter-keymap",
+                "ms-toolsai.jupyter-renderers",
+                "github.copilot",
+                "ms-vscode.vscode-json",
+                "redhat.vscode-yaml"
+            ],
+            "settings": {
+                "python.defaultInterpreterPath": "/usr/local/bin/python",
+                "pylint.enabled": true,
+                "pylint.args": ["--max-line-length=120"],
+                "[python]": {
+                    "editor.defaultFormatter": "ms-python.black-formatter",
+                    "editor.formatOnSave": true
+                },
+                "python.terminal.activateEnvironment": true,
+                "files.autoSave": "afterDelay",
+                "files.autoSaveDelay": 1000
+            }
+        }
+    },
+
+    "forwardPorts": [8888, 6006],
+    "portsAttributes": {
+        "8888": {
+            "label": "Jupyter",
+            "onAutoForward": "notify"
+        },
+        "6006": {
+            "label": "TensorBoard",
+            "onAutoForward": "notify"
+        }
+    },
+
+    "postCreateCommand": "pip install --upgrade pip && pip install -r requirements.txt",
+    
+    "remoteUser": "vscode",
+    
+    "mounts": [
+        "source=${localWorkspaceFolder}/data,target=/workspaces/pytorch_frame/data,type=bind,consistency=cached"
+    ]
+} 
