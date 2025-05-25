@@ -630,18 +630,18 @@ def run_demo_with_device(device_name):
     col_names_dict = train_dataset.tensor_frame.col_names_dict
     
     # === PCA ANALYSIS (now that variables are defined) ===
+    pca_target_configs = {
+        'is_senior': {'type': 'binary', 'column': 'is_senior'},
+        'high_earner': {'type': 'binary', 'column': 'high_earner'},
+        'highly_educated': {'type': 'binary', 'column': 'highly_educated'},
+        'education_years': {'type': 'regression', 'column': 'education_years'},
+        'predicted_age': {'type': 'regression', 'column': 'predicted_age'},
+        'capital_score': {'type': 'regression', 'column': 'capital_score'},
+        'work_sector': {'type': 'categorical', 'column': 'work_sector'},
+        'age_group': {'type': 'categorical', 'column': 'age_group'},
+        'education_tier': {'type': 'categorical', 'column': 'education_tier'}
+    }
     if device_name == 'cpu':
-        pca_target_configs = {
-            'is_senior': {'type': 'binary', 'column': 'is_senior'},
-            'high_earner': {'type': 'binary', 'column': 'high_earner'},
-            'highly_educated': {'type': 'binary', 'column': 'highly_educated'},
-            'education_years': {'type': 'regression', 'column': 'education_years'},
-            'predicted_age': {'type': 'regression', 'column': 'predicted_age'},
-            'capital_score': {'type': 'regression', 'column': 'capital_score'},
-            'work_sector': {'type': 'categorical', 'column': 'work_sector'},
-            'age_group': {'type': 'categorical', 'column': 'age_group'},
-            'education_tier': {'type': 'categorical', 'column': 'education_tier'}
-        }
         print("\n=== PERFORMING PCA ANALYSIS ===")
         pca_results = perform_comprehensive_pca_analysis(enhanced_df, col_names_dict, pca_target_configs)
     
@@ -657,22 +657,6 @@ def run_demo_with_device(device_name):
     
     print(f"   Train: {len(train_df)}, Val: {len(val_df)}, Test: {len(test_df)} samples")
     print(f"   Device: {device}")
-    
-    # === PCA ANALYSIS (now that variables are defined) ===
-    if device_name == 'cpu':
-        pca_target_configs = {
-            'is_senior': {'type': 'binary', 'column': 'is_senior'},
-            'high_earner': {'type': 'binary', 'column': 'high_earner'},
-            'highly_educated': {'type': 'binary', 'column': 'highly_educated'},
-            'education_years': {'type': 'regression', 'column': 'education_years'},
-            'predicted_age': {'type': 'regression', 'column': 'predicted_age'},
-            'capital_score': {'type': 'regression', 'column': 'capital_score'},
-            'work_sector': {'type': 'categorical', 'column': 'work_sector'},
-            'age_group': {'type': 'categorical', 'column': 'age_group'},
-            'education_tier': {'type': 'categorical', 'column': 'education_tier'}
-        }
-        print("\n=== PERFORMING PCA ANALYSIS ===")
-        pca_results = perform_comprehensive_pca_analysis(enhanced_df, col_names_dict, pca_target_configs)
     
     # === BINARY CLASSIFICATION EXPERIMENTS ===
     binary_results, train_hist_binary, val_hist_binary = evaluate_binary_classification(enhanced_df, train_df, val_df, col_names_dict, train_dataset, device)
