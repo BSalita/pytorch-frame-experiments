@@ -1,0 +1,140 @@
+{
+  "C_feature_0": {
+    "description": "Work class - type of employment (Private, Gov, Self-employed, etc.)",
+    "torch_frame_stype": "categorical",
+    "stype_object": "categorical",
+    "purpose": "feature",
+    "categories": null,
+    "preprocessing_notes": null,
+    "business_meaning": "Employment sector affects income patterns"
+  },
+  "C_feature_1": {
+    "description": "Education level - highest degree completed",
+    "torch_frame_stype": "categorical",
+    "stype_object": "categorical",
+    "purpose": "feature",
+    "categories": null,
+    "preprocessing_notes": null,
+    "business_meaning": "Higher education typically correlates with higher income"
+  },
+  "C_feature_2": {
+    "description": "Marital status - relationship status",
+    "torch_frame_stype": "categorical",
+    "stype_object": "categorical",
+    "purpose": "feature",
+    "categories": null,
+    "preprocessing_notes": null,
+    "business_meaning": "Marital status affects household income dynamics"
+  },
+  "C_feature_3": {
+    "description": "Occupation - specific job type",
+    "torch_frame_stype": "categorical",
+    "stype_object": "categorical",
+    "purpose": "feature",
+    "categories": null,
+    "preprocessing_notes": null,
+    "business_meaning": "Job role is primary determinant of income level"
+  },
+  "C_feature_4": {
+    "description": "Relationship - family relationship role",
+    "torch_frame_stype": "categorical",
+    "stype_object": "categorical",
+    "purpose": "feature",
+    "categories": null,
+    "preprocessing_notes": null,
+    "business_meaning": "Household role affects financial responsibility"
+  },
+  "C_feature_5": {
+    "description": "Race - racial category",
+    "torch_frame_stype": "categorical",
+    "stype_object": "categorical",
+    "purpose": "feature",
+    "categories": null,
+    "preprocessing_notes": "Sensitive attribute - consider fairness implications",
+    "business_meaning": null
+  },
+  "C_feature_6": {
+    "description": "Sex - gender",
+    "torch_frame_stype": "categorical",
+    "stype_object": "categorical",
+    "purpose": "feature",
+    "categories": null,
+    "preprocessing_notes": "Protected attribute - monitor for bias",
+    "business_meaning": null
+  },
+  "C_feature_7": {
+    "description": "Native country - country of birth",
+    "torch_frame_stype": "categorical",
+    "stype_object": "categorical",
+    "purpose": "feature",
+    "categories": null,
+    "preprocessing_notes": null,
+    "business_meaning": "Immigration status may affect income opportunities"
+  },
+  "N_feature_0": {
+    "description": "Age - age in years",
+    "torch_frame_stype": "numerical",
+    "stype_object": "numerical",
+    "purpose": "feature",
+    "categories": null,
+    "preprocessing_notes": null,
+    "business_meaning": "Income typically increases with age/experience"
+  },
+  "N_feature_1": {
+    "description": "Final weight - sampling weight from census",
+    "torch_frame_stype": "numerical",
+    "stype_object": "numerical",
+    "purpose": "feature",
+    "categories": null,
+    "preprocessing_notes": "Statistical weight - may need normalization",
+    "business_meaning": null
+  },
+  "N_feature_2": {
+    "description": "Education number - numerical encoding of education level",
+    "torch_frame_stype": "numerical",
+    "stype_object": "numerical",
+    "purpose": "feature",
+    "categories": null,
+    "preprocessing_notes": null,
+    "business_meaning": "Quantified education level (1=min, 16=max)"
+  },
+  "N_feature_3": {
+    "description": "Capital gain - income from asset sales",
+    "torch_frame_stype": "numerical",
+    "stype_object": "numerical",
+    "purpose": "feature",
+    "categories": null,
+    "preprocessing_notes": null,
+    "business_meaning": "Investment income indicates wealth level"
+  },
+  "N_feature_4": {
+    "description": "Capital loss - losses from asset sales",
+    "torch_frame_stype": "numerical",
+    "stype_object": "numerical",
+    "purpose": "feature",
+    "categories": null,
+    "preprocessing_notes": null,
+    "business_meaning": "Investment losses indicate financial activity"
+  },
+  "N_feature_5": {
+    "description": "Hours per week - typical work hours",
+    "torch_frame_stype": "numerical",
+    "stype_object": "numerical",
+    "purpose": "feature",
+    "categories": null,
+    "preprocessing_notes": null,
+    "business_meaning": "Work hours directly affect total income"
+  },
+  "target_col": {
+    "description": "Income level - binary classification target (>50K vs <=50K)",
+    "torch_frame_stype": "categorical",
+    "stype_object": "categorical",
+    "purpose": "target",
+    "categories": [
+      "<=50K",
+      ">50K"
+    ],
+    "preprocessing_notes": null,
+    "business_meaning": "Primary prediction target for income classification"
+  }
+}
