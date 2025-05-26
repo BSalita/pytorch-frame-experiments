@@ -44,6 +44,7 @@ pyyaml>=6.0             # YAML parsing for schema files
 # Additional validation and testing
 jsonschema>=4.0.0       # JSON schema validation for metadata
 validators>=0.20.0      # General validation utilities
+regex>=2023.0           # Advanced regex patterns for NL-to-SQL
 
 # Optional: Additional ML utilities
 # xgboost>=1.7.0        # Gradient boosting (if needed for comparisons)

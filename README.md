@@ -73,6 +73,19 @@ python pytorch_frame_enhanced_examples.py
 # 5. Display performance metrics and timing
 ```
 
+### Natural Language to SQL Demo
+Experience intelligent SQL generation with column prediction:
+```python
+# Run the natural language to SQL demo
+python natural_language_to_sql.py
+
+# The demo will show:
+# 1. Intent classification for different query types
+# 2. Semantic column matching using metadata
+# 3. Business rule application for enhanced queries
+# 4. Explainable predictions with confidence scores
+```
+
 ### GPU Support
 Both scripts automatically detect and use GPU if available:
 ```python
@@ -115,6 +128,34 @@ The `pytorch_frame_simple_demos.py` follows a clean, modular architecture:
 1. **BinaryClassificationModel**: Optimized for binary tasks with dropout and specialized architecture
 2. **RegressionModel**: Multi-layer architecture optimized for continuous predictions
 3. **MultiClassModel**: Attention-like mechanism for multi-class classification
+
+### 🧠 **Natural Language to SQL Translation System**
+
+A sophisticated system that leverages column metadata to translate natural language queries into SQL with intelligent prediction of useful columns beyond the obvious ones.
+
+#### **Key Features**
+- **Intent Classification**: Automatically detects query type (aggregation, comparison, trend analysis, etc.)
+- **Semantic Column Matching**: Uses TF-IDF embeddings to find relevant columns based on metadata
+- **Business Logic Rules**: Applies domain-specific knowledge about useful column combinations  
+- **Explainable Predictions**: Provides clear reasoning for each column inclusion
+- **Metadata Integration**: Leverages our rich column metadata framework for enhanced predictions
+
+#### **Example Transformation**
+```python
+# Natural Language Query
+"Show me the average income by customer segment"
+
+# Generated SQL with Predicted Columns
+SELECT customer_segment,
+       AVG(income_annual_usd) as avg_income_annual_usd,
+       SUM(income_annual_usd) as total_income_annual_usd,
+       customer_age_years,        # PREDICTED: Related context
+       transaction_date           # PREDICTED: Business rule
+FROM customer_data
+GROUP BY customer_segment, customer_age_years, transaction_date
+```
+
+See [`NATURAL_LANGUAGE_TO_SQL.md`](NATURAL_LANGUAGE_TO_SQL.md) for complete documentation.
 
 #### **Data Pipeline**
 1. **Data Loading**: Yandex Adult dataset
