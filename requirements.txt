@@ -1,5 +1,5 @@
 # PyTorch Frame Enhanced Examples - Complete Dependencies
-# Updated to include all packages used in pytorch_frame_enhanced_examples.py
+# Updated to include all packages for column metadata framework
 
 # PyTorch ecosystem with CUDA 12.8 support
 --find-links https://download.pytorch.org/whl/cu128
@@ -30,6 +30,21 @@ tqdm>=4.60.0            # Progress bars for training loops
 ipython>=8.0.0          # Enhanced interactive Python shell
 jupyter>=1.0.0          # Jupyter notebook support (optional)
 
+# Data Quality and Profiling (for metadata integration examples)
+ydata-profiling>=4.0.0  # Modern pandas-profiling with enhanced metadata support
+pydantic>=2.0.0         # Data validation for metadata schemas
+
+# MLOps Integration (for metadata tracking examples)
+mlflow>=2.8.0           # ML experiment tracking with metadata
+dvc>=3.0.0              # Data version control with schema management
+
+# YAML processing (for external schema files)
+pyyaml>=6.0             # YAML parsing for schema files
+
+# Additional validation and testing
+jsonschema>=4.0.0       # JSON schema validation for metadata
+validators>=0.20.0      # General validation utilities
+
 # Optional: Additional ML utilities
 # xgboost>=1.7.0        # Gradient boosting (if needed for comparisons)
 # lightgbm>=4.0.0       # Light gradient boosting (if needed for comparisons)
@@ -37,12 +52,11 @@ jupyter>=1.0.0          # Jupyter notebook support (optional)
 # System and logging
 psutil>=5.9.0           # System monitoring (optional)
 
-# Note: The code uses the following key imports:
-# - torch, torch.nn.functional, torch_frame
-# - pandas, numpy, polars  
-# - sklearn.decomposition.PCA, sklearn.preprocessing.StandardScaler
-# - sklearn.metrics.silhouette_score, sklearn.cluster.KMeans
-# - matplotlib.pyplot
-# - logging (built-in Python module)
-# - dataclasses (built-in Python 3.7+ module)
-# - typing (built-in Python module) 
+# Note: Core framework dependencies:
+# - torch, torch.nn.functional, torch_frame (tabular deep learning)
+# - pandas, numpy, polars (data manipulation)
+# - sklearn.* (ML utilities and PCA analysis)
+# - matplotlib, seaborn (visualization)
+# - ydata-profiling, mlflow, dvc (metadata integration examples)
+# - pydantic, jsonschema (metadata validation)
+# - logging, dataclasses, typing, re (built-in Python modules) 
