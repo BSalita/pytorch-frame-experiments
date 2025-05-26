@@ -20,7 +20,8 @@ When working with datasets, especially those with generic column names like `C_f
 5. [Approach 4: Auto-Discovery](#approach-4-auto-discovery)
 6. [PyTorch Frame Integration](#pytorch-frame-integration)
 7. [Best Practices](#best-practices)
-8. [Examples](#examples)
+8. [Integration Examples](#integration-examples)
+9. [Examples](#examples)
 
 ## 🚀 Quick Start
 
@@ -92,6 +93,40 @@ class SmartDataFrame:
 - ✅ Preserved through operations
 
 **Use when:** You want metadata to stay attached to DataFrames
+
+### Polars Alternative
+
+**Current Status:** Polars does **not** have a built-in attrs feature like Pandas. However, there are workarounds:
+
+```python
+# Option 1: Custom namespace plugin (runtime only)
+import polars as pl
+from polars.api import register_dataframe_namespace
+
+@register_dataframe_namespace("meta")
+class MetaPlugin:
+    def __init__(self, df): 
+        self._df = df
+    
+    def set_metadata(self, **kwargs):
+        # Store in global registry keyed by df id()
+        pass
+
+# Option 2: Subclassing approach  
+class MetaDataFrame(pl.DataFrame):
+    def __init__(self, data, metadata=None):
+        super().__init__(data)
+        self.metadata = metadata or {}
+
+# Option 3: External metadata storage
+metadata_registry = {}
+def store_metadata(df, metadata):
+    metadata_registry[id(df)] = metadata
+```
+
+**GitHub Issue:** There's an [active discussion](https://github.com/pola-rs/polars/issues/5117) about adding DataFrame-level metadata support to Polars. The community has proposed several workarounds, but no native solution exists yet.
+
+**Recommendation:** For Polars, use external metadata storage or the PyTorch Frame integration approach below.
 
 ## 📄 Approach 3: External Schema Files
 
@@ -170,6 +205,20 @@ stypes = annotator.get_stypes_dict()
 - ✅ Business context annotations
 - ✅ Preprocessing notes
 - ✅ Fairness considerations
+
+## 🔗 Related Resources
+
+For comprehensive guidance on creating columns with metadata from scratch, see our dedicated guide:
+
+📖 **[Creating Columns with Metadata: Best Practices Guide](CREATING_METADATA_COLUMNS.md)**
+
+This guide covers:
+- Schema-first design philosophy
+- Column naming conventions and standards
+- Industry frameworks (FAIR principles, Schema.org)
+- Validation and quality frameworks
+- Team collaboration guidelines
+- Migration strategies from legacy schemas
 
 ## 📝 Best Practices
 
@@ -272,23 +321,210 @@ def inspect_dataset(df):
 ## 📊 Integration Examples
 
 ### With Pandas Profiling
+[**pandas-profiling**](https://github.com/ydataai/ydata-profiling) (now **ydata-profiling**) is an automated EDA tool that generates comprehensive HTML reports from DataFrames.
+
 ```python
-# Generate profile with metadata
-profile = ProfileReport(df, title="Dataset with Metadata")
+from ydata_profiling import ProfileReport
+
+# Generate profile with metadata annotations
+profile = ProfileReport(
+    df, 
+    title="Dataset with Rich Metadata",
+    explorative=True,
+    config_file="profiling_config.yaml"
+)
+
+# Add custom metadata to report
 profile.config.html.style.primary_color = "#337ab7"
+profile.config.html.navbar_show = True
+
+# Include column descriptions in report
+for col_name, meta in annotator.column_info.items():
+    if col_name in df.columns:
+        # Add business context to profiling
+        profile.description_set[col_name] = {
+            "description": meta['description'],
+            "business_meaning": meta.get('business_meaning', ''),
+            "preprocessing_notes": meta.get('preprocessing_notes', '')
+        }
+
+profile.to_file("enhanced_report.html")
 ```
+
+**Benefits:**
+- Rich statistical analysis with business context
+- Automated data quality assessment
+- Beautiful HTML reports with metadata annotations
+- Correlation analysis with feature explanations
 
 ### With MLflow
+[**MLflow**](https://mlflow.org/) is an open-source platform for managing ML lifecycle, including experimentation, reproducibility, and deployment.
+
 ```python
-# Log metadata as artifacts
-mlflow.log_dict(annotator.column_info, "column_metadata.json")
+import mlflow
+import mlflow.sklearn
+from mlflow.tracking import MlflowClient
+
+# Start MLflow run with metadata tracking
+with mlflow.start_run(run_name="tabular_model_with_metadata"):
+    
+    # Log dataset metadata as artifacts
+    mlflow.log_dict(annotator.column_info, "column_metadata.json")
+    
+    # Log dataset schema
+    schema_info = {
+        'dataset_name': schema.name,
+        'num_features': len(annotator.get_feature_columns()),
+        'num_targets': len(annotator.get_target_columns()),
+        'feature_types': {col: info['torch_frame_stype'] 
+                         for col, info in annotator.column_info.items()},
+        'business_context': {col: info.get('business_meaning', '') 
+                           for col, info in annotator.column_info.items()}
+    }
+    mlflow.log_dict(schema_info, "dataset_schema.json")
+    
+    # Log preprocessing notes for reproducibility
+    preprocessing_notes = {
+        col: info.get('preprocessing_notes', '') 
+        for col, info in annotator.column_info.items() 
+        if info.get('preprocessing_notes')
+    }
+    mlflow.log_dict(preprocessing_notes, "preprocessing_requirements.json")
+    
+    # Train model and log with metadata context
+    model = train_your_model(df, annotator)
+    mlflow.sklearn.log_model(
+        model, 
+        "model",
+        metadata={
+            "feature_importance_context": annotator.describe_for_llm(),
+            "data_schema_version": "1.0"
+        }
+    )
+    
+    # Log feature importance with business context
+    if hasattr(model, 'feature_importances_'):
+        feature_importance = dict(zip(
+            annotator.get_feature_columns(), 
+            model.feature_importances_
+        ))
+        mlflow.log_dict(feature_importance, "feature_importance.json")
 ```
 
+**Benefits:**
+- Complete model lifecycle tracking with business context
+- Reproducible experiments with metadata versioning
+- Easy model comparison with feature explanations
+- Collaboration through shared understanding of data
+
 ### With DVC
+[**DVC (Data Version Control)**](https://dvc.org/) is a version control system for ML projects, handling data, models, and pipelines.
+
 ```python
-# Version control schemas
+# dvc.yaml - Define pipeline with metadata dependencies
+import yaml
+
+pipeline_config = {
+    'stages': {
+        'validate_schema': {
+            'cmd': 'python validate_metadata.py',
+            'deps': ['schema.yaml', 'raw_data.csv'],
+            'outs': ['validated_metadata.json'],
+            'desc': 'Validate dataset against business schema'
+        },
+        'prepare_data': {
+            'cmd': 'python prepare_data.py',
+            'deps': ['validated_metadata.json', 'raw_data.csv'],
+            'outs': ['processed_data.csv', 'column_transformations.json'],
+            'desc': 'Apply transformations based on metadata'
+        },
+        'train_model': {
+            'cmd': 'python train.py',
+            'deps': ['processed_data.csv', 'column_transformations.json'],
+            'outs': ['model.pkl', 'feature_importance.json'],
+            'metrics': ['metrics.json'],
+            'desc': 'Train model with metadata-aware features'
+        }
+    }
+}
+
+with open('dvc.yaml', 'w') as f:
+    yaml.dump(pipeline_config, f)
+
+# schema.yaml - Version controlled metadata schema
+schema_file = {
+    'dataset': {
+        'name': 'Adult Income Classification',
+        'version': '2.1.0',
+        'description': 'Census data with rich business metadata'
+    },
+    'columns': annotator.column_info,
+    'validation_rules': {
+        'age': {'min': 16, 'max': 100},
+        'income': {'categories': ['<=50K', '>50K']},
+        'education_years': {'min': 1, 'max': 21}
+    },
+    'data_quality': {
+        'max_missing_percentage': 0.05,
+        'outlier_detection': True,
+        'bias_monitoring': ['gender', 'race']
+    }
+}
+
+with open('schema.yaml', 'w') as f:
+    yaml.dump(schema_file, f)
+
+# Track schema with DVC
 # dvc add schema.yaml
-# git add schema.yaml.dv
+# git add schema.yaml.dvc
+# git commit -m "Add business metadata schema v2.1.0"
+
+# params.yaml - Parameters with metadata context
+params = {
+    'model': {
+        'algorithm': 'TabTransformer',
+        'embedding_dim': 64,
+        'num_attention_heads': 8
+    },
+    'features': {
+        'categorical_features': annotator.get_categorical_features(),
+        'numerical_features': annotator.get_numerical_features(),
+        'sensitive_attributes': ['gender', 'race'],  # From metadata
+        'high_importance_features': ['education', 'occupation']  # From business logic
+    },
+    'training': {
+        'epochs': 50,
+        'batch_size': 128,
+        'fairness_constraints': True  # Enabled due to sensitive attributes
+    }
+}
 ```
+
+**DVC Workflow Commands:**
+```bash
+# Initialize DVC in your project
+dvc init
+
+# Track large data files
+dvc add raw_data.csv
+git add raw_data.csv.dvc .gitignore
+
+# Run pipeline with metadata validation
+dvc repro
+
+# Compare experiments with metadata context
+dvc exp show --include-params features.categorical_features
+
+# Share data with metadata
+dvc push
+git push
+```
+
+**Benefits:**
+- Version control for data schemas and transformations
+- Reproducible pipelines with metadata dependencies  
+- Collaboration through shared data understanding
+- Experiment tracking with business context
+- Data lineage with transformation reasoning
 
 This comprehensive approach ensures that your DataFrame columns are fully discoverable and understandable by both humans and LLMs, leading to better code quality, faster debugging, and more maintainable ML pipelines. 
